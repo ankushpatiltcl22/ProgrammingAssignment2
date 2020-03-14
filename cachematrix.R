@@ -33,3 +33,4 @@ cacheSolve <- function(x, ...) {
   inv
 }
 
+##test cases are present in Read_me.text file
