@@ -1,105 +1,43 @@
-### Introduction
+##Peer-graded Assignment: Programming Assignment 2: Lexical Scoping
 
-This second programming assignment will require you to write an R
-function that is able to cache potentially time-consuming computations.
-For example, taking the mean of a numeric vector is typically a fast
-operation. However, for a very long vector, it may take too long to
-compute the mean, especially if it has to be computed repeatedly (e.g.
-in a loop). If the contents of a vector are not changing, it may make
-sense to cache the value of the mean so that when we need it again, it
-can be looked up in the cache rather than recomputed. In this
-Programming Assignment you will take advantage of the scoping rules of
-the R language and how they can be manipulated to preserve state inside
-of an R object.
 
-### Example: Caching the Mean of a Vector
 
-In this example we introduce the `<<-` operator which can be used to
-assign a value to an object in an environment that is different from the
-current environment. Below are two functions that are used to create a
-special object that stores a numeric vector and caches its mean.
 
-The first function, `makeVector` creates a special "vector", which is
-really a list containing a function to
+***Test Cases***
+> a <- matrix(rnorm(4),2,2)
+> b <- makeCacheMatrix(a)
+> cacheSolve(b)
 
-1.  set the value of the vector
-2.  get the value of the vector
-3.  set the value of the mean
-4.  get the value of the mean
+           [,1]      [,2]
+[1,] -0.8743648 0.1437579
+[2,] -1.4401466 2.1883039
 
-<!-- -->
+> a <- matrix(rnorm(9),3,3)
+> b <- makeCacheMatrix(a)
+> cacheSolve(b)
 
-    makeVector <- function(x = numeric()) {
-            m <- NULL
-            set <- function(y) {
-                    x <<- y
-                    m <<- NULL
-            }
-            get <- function() x
-            setmean <- function(mean) m <<- mean
-            getmean <- function() m
-            list(set = set, get = get,
-                 setmean = setmean,
-                 getmean = getmean)
-    }
+            [,1]       [,2]        [,3]
+[1,] -0.03061152 0.31859366  0.97103426
+[2,] -0.42497909 0.09200919 -0.01964536
+[3,]  0.19672716 1.53248447  0.89787772
 
-The following function calculates the mean of the special "vector"
-created with the above function. However, it first checks to see if the
-mean has already been calculated. If so, it `get`s the mean from the
-cache and skips the computation. Otherwise, it calculates the mean of
-the data and sets the value of the mean in the cache via the `setmean`
-function.
+> a <- matrix(rnorm(16),4,4)
+> b <- makeCacheMatrix(a)
+>  cacheSolve(b)
 
-    cachemean <- function(x, ...) {
-            m <- x$getmean()
-            if(!is.null(m)) {
-                    message("getting cached data")
-                    return(m)
-            }
-            data <- x$get()
-            m <- mean(data, ...)
-            x$setmean(m)
-            m
-    }
+           [,1]      [,2]       [,3]      [,4]
+[1,] -0.1764380  2.820554  1.0299139  1.345434
+[2,]  0.1791698 -3.276911 -0.7646985 -1.895740
+[3,] -0.7086666  2.963787  0.6976065  1.400591
+[4,] -0.3764773  2.775705  1.1543025  2.168745
 
-### Assignment: Caching the Inverse of a Matrix
+> a <- matrix(rnorm(25),5,5)
+> b <- makeCacheMatrix(a)
+> cacheSolve(b)
 
-Matrix inversion is usually a costly computation and there may be some
-benefit to caching the inverse of a matrix rather than computing it
-repeatedly (there are also alternatives to matrix inversion that we will
-not discuss here). Your assignment is to write a pair of functions that
-cache the inverse of a matrix.
-
-Write the following functions:
-
-1.  `makeCacheMatrix`: This function creates a special "matrix" object
-    that can cache its inverse.
-2.  `cacheSolve`: This function computes the inverse of the special
-    "matrix" returned by `makeCacheMatrix` above. If the inverse has
-    already been calculated (and the matrix has not changed), then
-    `cacheSolve` should retrieve the inverse from the cache.
-
-Computing the inverse of a square matrix can be done with the `solve`
-function in R. For example, if `X` is a square invertible matrix, then
-`solve(X)` returns its inverse.
-
-For this assignment, assume that the matrix supplied is always
-invertible.
-
-In order to complete this assignment, you must do the following:
-
-1.  Fork the GitHub repository containing the stub R files at
-    [https://github.com/rdpeng/ProgrammingAssignment2](https://github.com/rdpeng/ProgrammingAssignment2)
-    to create a copy under your own account.
-2.  Clone your forked GitHub repository to your computer so that you can
-    edit the files locally on your own machine.
-3.  Edit the R file contained in the git repository and place your
-    solution in that file (please do not rename the file).
-4.  Commit your completed R file into YOUR git repository and push your
-    git branch to the GitHub repository under your account.
-5.  Submit to Coursera the URL to your GitHub repository that contains
-    the completed R code for the assignment.
-
-### Grading
-
-This assignment will be graded via peer assessment.
+           [,1]        [,2]       [,3]       [,4]       [,5]
+[1,]  0.9728966 -0.23124359 -0.1099162 -0.2801211  0.6892089
+[2,] -0.5112995  0.62507295 -0.7878250 -0.1605402  0.2527291
+[3,]  0.2549992  0.04080565  0.7148973  0.3321964 -0.1181749
+[4,] -0.1957071 -0.19219140 -1.1330432  0.3220317 -0.8204162
+[5,] -0.8672421  0.43364821 -0.9097335 -0.3243333 -0.8379884
